@@ -30,35 +30,35 @@ namespace SaveFileSync
         private static string FILE_NAME = "";
         private static long FILE_CREATION_TIME = 1;
         private static List<string> FILE_LIST;
+
         void Log(string text)
         {
             logbox.Text += $"[{DateTime.Now.ToString("h:mm:sstt")}] {text}\n";
         }
+
         void ListOnlineFiles()
         {
             try
             {
                 FtpWebRequest request = (FtpWebRequest)WebRequest.Create(FTP_URL);
-                request.Method = WebRequestMethods.Ftp.ListDirectory;
 
+                request.Method = WebRequestMethods.Ftp.ListDirectory;
                 request.Credentials = FTP_CREDENTIALS;
 
-                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
-                Stream responseStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(responseStream);
-                string names = reader.ReadToEnd();
-
-                reader.Close();
-                response.Close();
-
-
-                FILE_LIST = names.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream);
+                    string names = reader.ReadToEnd();
+                    FILE_LIST = names.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                }
             }
             catch (Exception)
             {
                 throw;
             }
         }
+
         void FindDirectory()
         {
             try
@@ -81,9 +81,10 @@ namespace SaveFileSync
             }
             catch (Exception)
             {
-
+                throw;
             }
         }
+
         void FindFile()
         {
             try
@@ -112,9 +113,10 @@ namespace SaveFileSync
             }
             catch (Exception)
             {
-
+                throw;
             }
         }
+
         bool CheckOnline()
         {
             ListOnlineFiles();
@@ -140,6 +142,7 @@ namespace SaveFileSync
             return false;
 
         }
+
         void DownloadFile()
         {
             var new_file = $"{SERVER_NAME}_{FILE_CREATION_TIME}.sync.sav";
@@ -160,6 +163,7 @@ namespace SaveFileSync
                 Log($"Download Complete, status {response.StatusDescription}");
 
         }
+
         void UploadFile()
         {
             var new_file = $"{SERVER_NAME}_{FILE_CREATION_TIME}.sync.sav";
