@@ -14,18 +14,18 @@ namespace SaveFileSync
         {
             InitializeComponent();
         }
-
         
         private static string FTP_URL = ""; //The FTP url need to be empty/only contain files uploaded by this program.
         private static string FTP_USERNAME = "";
         private static string FTP_PASSWORD = ""; //No encryption in this program so make sure to only share to friends.
         private static NetworkCredential FTP_CREDENTIALS = new NetworkCredential(FTP_USERNAME, FTP_PASSWORD);
 
-        private static string SERVER_NAME = "asd"; //implement this into UI
+        private static string SERVER_NAME = Properties.Settings.Default.SERVER_NAME; //implement this into UI
         private static string BASE_PATH = $@"{Environment.GetEnvironmentVariable("LocalAppData")}\FactoryGame\Saved\SaveGames\";
         private static string FILE_NAME = "";
         private static long FILE_CREATION_TIME = 1;
         private static List<string> FILE_LIST;
+        
 
         void Log(string text)
         {
@@ -50,9 +50,9 @@ namespace SaveFileSync
                     FILE_LIST = names.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Log($"(101) {ex.Message}");
             }
         }
 
@@ -77,10 +77,10 @@ namespace SaveFileSync
                 Log($"Got directory: {BASE_PATH}");
                 SearchPath.Text = BASE_PATH;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Log("Couldn't find directory... Try manually selecting it.");
-                throw;
+                Log($"(102) {ex.Message}");
             }
         }
 
@@ -111,9 +111,9 @@ namespace SaveFileSync
                 else
                     UploadFile();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Log($"(103) {ex.Message}");
             }
         }
 
@@ -189,28 +189,71 @@ namespace SaveFileSync
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            if (ServerName.Text == "")
+            {
+                Log("You need to set a server name...");
+                return;
+            }
+            Properties.Settings.Default.SERVER_NAME = ServerName.Text;
+            Properties.Settings.Default.Save();
+            SERVER_NAME = ServerName.Text; 
             FindFile();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+
+            ServerName.Text = Properties.Settings.Default.SERVER_NAME;
             SearchPath.Text = BASE_PATH;
             FindDirectory();
         }
 
         private void FolderButton_Click(object sender, EventArgs e)
         {
-            var dialog = new FolderSelectDialog
+            try
             {
-                InitialDirectory = BASE_PATH,
-                Title = "Select a folder to import save file from"
-            };
-            if (dialog.Show(Handle))
+                var dialog = new FolderSelectDialog
+                {
+                    InitialDirectory = BASE_PATH,
+                    Title = "Select a folder to import save file from"
+                };
+                if (dialog.Show(Handle))
+                {
+                    SearchPath.Text = dialog.FileName;
+                    BASE_PATH = dialog.FileName;
+                    Log($"Got directory: {BASE_PATH}");
+                }
+            }
+            catch (Exception ex)
             {
-                SearchPath.Text = dialog.FileName;
-                BASE_PATH = dialog.FileName;
-                Log($"Got directory: {BASE_PATH}");
+                Log($"(103) {ex.Message}");
             }
         }
+        #region "placeholders"
+        private void ServerName_Enter(object sender, EventArgs e)
+        {
+            if (ServerName.Text == "Server name here")
+                ServerName.Text = "";
+        }
+
+        private void ServerName_Leave(object sender, EventArgs e)
+        {
+            if (ServerName.Text == "")
+                ServerName.Text = "Server name here";
+        }
+
+        private void SearchPath_Enter(object sender, EventArgs e)
+        {
+            if (SearchPath.Text == "Save file directory here")
+                SearchPath.Text = "";
+        }
+
+        private void SearchPath_Leave(object sender, EventArgs e)
+        {
+            if (SearchPath.Text == "")
+                SearchPath.Text = "Save file directory here";
+        }
+        #endregion
     }
 }

@@ -32,13 +32,14 @@
             this.logbox = new System.Windows.Forms.RichTextBox();
             this.SearchPath = new System.Windows.Forms.TextBox();
             this.FolderButton = new System.Windows.Forms.Button();
+            this.ServerName = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(12, 272);
+            this.button1.Location = new System.Drawing.Point(158, 272);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(106, 23);
+            this.button1.Size = new System.Drawing.Size(106, 22);
             this.button1.TabIndex = 0;
             this.button1.Text = "Sync Save File";
             this.button1.UseVisualStyleBackColor = true;
@@ -59,7 +60,10 @@
             this.SearchPath.Name = "SearchPath";
             this.SearchPath.Size = new System.Drawing.Size(437, 20);
             this.SearchPath.TabIndex = 2;
-            this.SearchPath.Tag = "asd";
+            this.SearchPath.Tag = "";
+            this.SearchPath.Text = "Save file directory here";
+            this.SearchPath.Enter += new System.EventHandler(this.SearchPath_Enter);
+            this.SearchPath.Leave += new System.EventHandler(this.SearchPath_Leave);
             // 
             // FolderButton
             // 
@@ -71,15 +75,27 @@
             this.FolderButton.UseVisualStyleBackColor = true;
             this.FolderButton.Click += new System.EventHandler(this.FolderButton_Click);
             // 
+            // ServerName
+            // 
+            this.ServerName.Location = new System.Drawing.Point(12, 273);
+            this.ServerName.Name = "ServerName";
+            this.ServerName.Size = new System.Drawing.Size(140, 20);
+            this.ServerName.TabIndex = 4;
+            this.ServerName.Tag = "";
+            this.ServerName.Text = "Server name here";
+            this.ServerName.Enter += new System.EventHandler(this.ServerName_Enter);
+            this.ServerName.Leave += new System.EventHandler(this.ServerName_Leave);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(507, 301);
+            this.ClientSize = new System.Drawing.Size(507, 302);
+            this.Controls.Add(this.ServerName);
             this.Controls.Add(this.FolderButton);
             this.Controls.Add(this.SearchPath);
-            this.Controls.Add(this.logbox);
             this.Controls.Add(this.button1);
+            this.Controls.Add(this.logbox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "Form1";
             this.Text = "Save File Syncer";
@@ -95,6 +111,7 @@
         private System.Windows.Forms.RichTextBox logbox;
         private System.Windows.Forms.TextBox SearchPath;
         private System.Windows.Forms.Button FolderButton;
+        private System.Windows.Forms.TextBox ServerName;
     }
 }
 
