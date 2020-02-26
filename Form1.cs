@@ -15,9 +15,9 @@ namespace SaveFileSync
             InitializeComponent();
         }
         
-        private static string FTP_URL = "ftp://ftp.arvidbigplays.se/asd/"; //The FTP url need to be empty/only contain files uploaded by this program.
-        private static string FTP_USERNAME = "arvidbigplays.se";
-        private static string FTP_PASSWORD = "RIPJuice!2019"; //No encryption in this program so make sure to only share to friends.
+        private static string FTP_URL = ""; //The FTP url need to be empty/only contain files uploaded by this program.
+        private static string FTP_USERNAME = ";
+        private static string FTP_PASSWORD = ""; //No encryption in this program so make sure to only share to friends.
         private static NetworkCredential FTP_CREDENTIALS = new NetworkCredential(FTP_USERNAME, FTP_PASSWORD);
 
         private static string SERVER_NAME = Properties.Settings.Default.SERVER_NAME;
