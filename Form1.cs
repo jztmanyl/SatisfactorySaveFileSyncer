@@ -15,12 +15,12 @@ namespace SaveFileSync
             InitializeComponent();
         }
         
-        private static string FTP_URL = ""; //The FTP url need to be empty/only contain files uploaded by this program.
-        private static string FTP_USERNAME = "";
-        private static string FTP_PASSWORD = ""; //No encryption in this program so make sure to only share to friends.
+        private static string FTP_URL = "ftp://ftp.arvidbigplays.se/asd/"; //The FTP url need to be empty/only contain files uploaded by this program.
+        private static string FTP_USERNAME = "arvidbigplays.se";
+        private static string FTP_PASSWORD = "RIPJuice!2019"; //No encryption in this program so make sure to only share to friends.
         private static NetworkCredential FTP_CREDENTIALS = new NetworkCredential(FTP_USERNAME, FTP_PASSWORD);
 
-        private static string SERVER_NAME = Properties.Settings.Default.SERVER_NAME; //implement this into UI
+        private static string SERVER_NAME = Properties.Settings.Default.SERVER_NAME;
         private static string BASE_PATH = $@"{Environment.GetEnvironmentVariable("LocalAppData")}\FactoryGame\Saved\SaveGames\";
         private static string FILE_NAME = "";
         private static long FILE_CREATION_TIME = 1;
@@ -90,6 +90,7 @@ namespace SaveFileSync
             try
             {
                 var files = Directory.GetFiles(BASE_PATH);
+                var kill_switch = true;
                 foreach (var file in files)
                 {
                     var file_info = new FileInfo(file);
@@ -102,8 +103,16 @@ namespace SaveFileSync
                     {
                         FILE_CREATION_TIME = creation_time;
                         FILE_NAME = file_name;
+                        kill_switch = false;
                     }
                 }
+
+                if (kill_switch)
+                {
+                    Log("Couldn't find file...");
+                    return;
+                }
+
                 Log($"Found file: {FILE_NAME}");
 
                 if (CheckOnline())
@@ -202,9 +211,8 @@ namespace SaveFileSync
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-
-            ServerName.Text = Properties.Settings.Default.SERVER_NAME;
+            if (Properties.Settings.Default.SERVER_NAME != "")
+                ServerName.Text = Properties.Settings.Default.SERVER_NAME;
             SearchPath.Text = BASE_PATH;
             FindDirectory();
         }
