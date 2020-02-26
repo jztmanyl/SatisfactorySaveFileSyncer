@@ -1,14 +1,9 @@
 ﻿using Skogstekniskt;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SaveFileSync
@@ -20,9 +15,10 @@ namespace SaveFileSync
             InitializeComponent();
         }
 
-        private static string FTP_URL = "";
+        
+        private static string FTP_URL = ""; //The FTP url need to be empty/only contain files uploaded by this program.
         private static string FTP_USERNAME = "";
-        private static string FTP_PASSWORD = "";
+        private static string FTP_PASSWORD = ""; //No encryption in this program so make sure to only share to friends.
         private static NetworkCredential FTP_CREDENTIALS = new NetworkCredential(FTP_USERNAME, FTP_PASSWORD);
 
         private static string SERVER_NAME = "asd"; //implement this into UI
@@ -36,20 +32,21 @@ namespace SaveFileSync
             logbox.Text += $"[{DateTime.Now.ToString("h:mm:sstt")}] {text}\n";
         }
 
+        //Find all files in the FTP directory so we later can compare them to local ones.
         void ListOnlineFiles()
         {
             try
             {
-                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(FTP_URL);
+                var request = (FtpWebRequest)WebRequest.Create(FTP_URL);
 
                 request.Method = WebRequestMethods.Ftp.ListDirectory;
                 request.Credentials = FTP_CREDENTIALS;
 
-                using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
-                using (Stream responseStream = response.GetResponseStream())
+                using (var response = (FtpWebResponse)request.GetResponse())
+                using (var responseStream = response.GetResponseStream())
                 {
-                    StreamReader reader = new StreamReader(responseStream);
-                    string names = reader.ReadToEnd();
+                    var reader = new StreamReader(responseStream);
+                    var names = reader.ReadToEnd();
                     FILE_LIST = names.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 }
             }
@@ -59,6 +56,7 @@ namespace SaveFileSync
             }
         }
 
+        //Find the directory in "SaveGames" that contains all the saves.
         void FindDirectory()
         {
             try
@@ -86,6 +84,7 @@ namespace SaveFileSync
             }
         }
 
+        //Find the latest save file so we can decide wheter to upload or download.
         void FindFile()
         {
             try
@@ -118,6 +117,7 @@ namespace SaveFileSync
             }
         }
 
+        //Compare the latest online save file with the latest local save file.
         bool CheckOnline()
         {
             ListOnlineFiles();
@@ -144,43 +144,45 @@ namespace SaveFileSync
 
         }
 
+        //Download the save file
         void DownloadFile()
         {
             var new_file = $"{SERVER_NAME}_{FILE_CREATION_TIME}.sync.sav";
             var file_name = Path.Combine(BASE_PATH, new_file);
 
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"{FTP_URL}/{new_file}");
+            var request = (FtpWebRequest)WebRequest.Create($"{FTP_URL}/{new_file}");
 
             request.Method = WebRequestMethods.Ftp.DownloadFile;
             request.Credentials = FTP_CREDENTIALS;
 
-            using (Stream fileStream = File.Create(file_name))
-            using (Stream requestStream = request.GetRequestStream())
+            using (var fileStream = File.Create(file_name))
+            using (var requestStream = request.GetRequestStream())
             {
                 requestStream.CopyTo(fileStream);
             }
 
-            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
                 Log($"Download Complete, status {response.StatusDescription}");
 
         }
 
+        //Upload the save file
         void UploadFile()
         {
             var new_file = $"{SERVER_NAME}_{FILE_CREATION_TIME}.sync.sav";
             var file_name = Path.Combine(BASE_PATH, FILE_NAME);
 
-            FtpWebRequest request = (FtpWebRequest)WebRequest.Create($"{FTP_URL}/{new_file}");
+            var request = (FtpWebRequest)WebRequest.Create($"{FTP_URL}/{new_file}");
 
             request.Method = WebRequestMethods.Ftp.UploadFile;
             request.Credentials = FTP_CREDENTIALS;
 
-            using (Stream fileStream = File.OpenRead(file_name))
-            using (Stream requestStream = request.GetRequestStream())
+            using (var fileStream = File.OpenRead(file_name))
+            using (var requestStream = request.GetRequestStream())
             {
                 fileStream.CopyTo(requestStream);
             }
-            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+            using (var response = (FtpWebResponse)request.GetResponse())
                 Log($"Upload File Complete, status {response.StatusDescription}");
             
         }
