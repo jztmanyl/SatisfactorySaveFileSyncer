@@ -66,7 +66,7 @@ namespace SaveFileSync
                 var directories = Directory.GetDirectories(BASE_PATH);
                 if (directories.Length > 2)
                 {
-                    Log("More than 2 directories in SaveGames..");
+                    Log("More than 2 directories in SaveGames... You need to manually select directory.");
                     return;
                 }
                 foreach (var dir in directories)
@@ -81,6 +81,7 @@ namespace SaveFileSync
             }
             catch (Exception)
             {
+                Log("Couldn't find directory... Try manually selecting it.");
                 throw;
             }
         }
