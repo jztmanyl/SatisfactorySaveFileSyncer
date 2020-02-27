@@ -9,7 +9,7 @@ This helps you share your save file (server) with your friends, all of you need 
 If you what to compile it on your own you will need a .net compiler. Otherwise the following are the only requirements.
 
 ```
-One FTP server with an empty folder you are willing to enter the password in this program to. (You can use a free host).
+One FTP server with an empty folder you are willing to enter the password in this program to. (You can use a free host, let me know if you need help).
 .NET Framework v4.5 or greater
 ```
 
