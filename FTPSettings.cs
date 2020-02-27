@@ -52,6 +52,7 @@ namespace SaveFileSync
             using (var writer = new JsonTextWriter(file))
             {
                 settings_file.WriteTo(writer);
+                _form1.Log("Saved settings file: savefilesync.dat.");
             }
         }
 
@@ -74,18 +75,19 @@ namespace SaveFileSync
                 FTPPassword.Text = FTP_PASSWORD;
                 EncryptionSalt.Text = ENCRYPTION_SALT;
             }
+            _form1.SETTINGS_LOADED = true;
         }
 
         private void FTPSettings_Load(object sender, EventArgs e)
         {
             if (File.Exists(SETTINGS_FILE))
             { 
-                _form1.Log("Found settings file.");
+                _form1.Log("Found settings file: savefilesync.dat.");
                 LoadSettings();
             }
             else
             {
-                _form1.Log("No settings file found... Creating new.");
+                _form1.Log("No settings file found... Creating savefilesync.dat.");
                 CreateFile();
             }
         }

@@ -15,14 +15,23 @@ namespace SaveFileSync
         private static string SERVER_NAME = Properties.Settings.Default.SERVER_NAME;
         private static string BASE_PATH = $@"{Environment.GetEnvironmentVariable("LocalAppData")}\FactoryGame\Saved\SaveGames\";
         private static string FILE_NAME = "";
-        private static long FILE_CREATION_TIME = 1;
+        private static long FILE_CREATION_TIME;
         private static List<string> FILE_LIST;
+
+        private static bool _SETTINGS_LOADED = false;
+
+        public bool SETTINGS_LOADED
+        {
+            get { return _SETTINGS_LOADED;  }
+            set { _SETTINGS_LOADED = value; }
+        }
 
         public Form1()
         {
             InitializeComponent();
         }
         
+        //Logging function
         public void Log(string text)
         {
             logbox.Text += $"[{DateTime.Now.ToString("h:mm:sstt")}] {text}\n";
@@ -194,11 +203,20 @@ namespace SaveFileSync
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            if (ServerName.Text == "")
+            if (!SETTINGS_LOADED)
+            {
+                Log("You need to enter FTP settings...");
+                return;
+            }
+
+            if (ServerName.Text.Length == 0)
             {
                 Log("You need to set a server name...");
                 return;
             }
+
+            FILE_CREATION_TIME = 1;
+            FILE_LIST = null;
 
             Properties.Settings.Default.SERVER_NAME = ServerName.Text;
             Properties.Settings.Default.Save();
@@ -238,6 +256,12 @@ namespace SaveFileSync
                 Log($"(103) {ex.Message}");
             }
         }
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            var FTPSettings = new FTPSettings(this);
+            FTPSettings.ShowDialog();
+        }
+
         #region "placeholders"
         private void ServerName_Enter(object sender, EventArgs e)
         {
@@ -264,10 +288,5 @@ namespace SaveFileSync
         }
         #endregion
 
-        private void Button2_Click(object sender, EventArgs e)
-        {
-            var FTPSettings = new FTPSettings(this);
-            FTPSettings.ShowDialog();
-        }
     }
 }

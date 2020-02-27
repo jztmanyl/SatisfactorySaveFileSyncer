@@ -50,3 +50,6 @@ This project is licensed under the GPL-3.0 License - see the [LICENSE.md](LICENS
 
 * Security risk considering you're sharing your password with basic encryption
 * May contain bugs since it's only been used by people thoroughly instructed on usage
+* newtonsoft (and others) for Newtonsoft.JSON
+* chetanvajre2012 for RijndaelEncryptDecrypt
+* Fody for Costura
