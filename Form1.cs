@@ -10,24 +10,20 @@ namespace SaveFileSync
 {
     public partial class Form1 : Form
     {
-        public Form1()
-        {
-            InitializeComponent();
-        }
-        
-        private static string FTP_URL = ""; //The FTP url need to be empty/only contain files uploaded by this program.
-        private static string FTP_USERNAME = ";
-        private static string FTP_PASSWORD = ""; //No encryption in this program so make sure to only share to friends.
-        private static NetworkCredential FTP_CREDENTIALS = new NetworkCredential(FTP_USERNAME, FTP_PASSWORD);
+        private static NetworkCredential FTP_CREDENTIALS;
 
         private static string SERVER_NAME = Properties.Settings.Default.SERVER_NAME;
         private static string BASE_PATH = $@"{Environment.GetEnvironmentVariable("LocalAppData")}\FactoryGame\Saved\SaveGames\";
         private static string FILE_NAME = "";
         private static long FILE_CREATION_TIME = 1;
         private static List<string> FILE_LIST;
-        
 
-        void Log(string text)
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        
+        public void Log(string text)
         {
             logbox.Text += $"[{DateTime.Now.ToString("h:mm:sstt")}] {text}\n";
         }
@@ -37,7 +33,7 @@ namespace SaveFileSync
         {
             try
             {
-                var request = (FtpWebRequest)WebRequest.Create(FTP_URL);
+                var request = (FtpWebRequest)WebRequest.Create(FTPSettings.FTP_URL);
 
                 request.Method = WebRequestMethods.Ftp.ListDirectory;
                 request.Credentials = FTP_CREDENTIALS;
@@ -159,7 +155,7 @@ namespace SaveFileSync
             var new_file = $"{SERVER_NAME}_{FILE_CREATION_TIME}.sync.sav";
             var file_name = Path.Combine(BASE_PATH, new_file);
 
-            var request = (FtpWebRequest)WebRequest.Create($"{FTP_URL}/{new_file}");
+            var request = (FtpWebRequest)WebRequest.Create($"{FTPSettings.FTP_URL}/{new_file}");
 
             request.Method = WebRequestMethods.Ftp.DownloadFile;
             request.Credentials = FTP_CREDENTIALS;
@@ -181,7 +177,7 @@ namespace SaveFileSync
             var new_file = $"{SERVER_NAME}_{FILE_CREATION_TIME}.sync.sav";
             var file_name = Path.Combine(BASE_PATH, FILE_NAME);
 
-            var request = (FtpWebRequest)WebRequest.Create($"{FTP_URL}/{new_file}");
+            var request = (FtpWebRequest)WebRequest.Create($"{FTPSettings.FTP_URL}/{new_file}");
 
             request.Method = WebRequestMethods.Ftp.UploadFile;
             request.Credentials = FTP_CREDENTIALS;
@@ -203,9 +199,13 @@ namespace SaveFileSync
                 Log("You need to set a server name...");
                 return;
             }
+
             Properties.Settings.Default.SERVER_NAME = ServerName.Text;
             Properties.Settings.Default.Save();
-            SERVER_NAME = ServerName.Text; 
+            SERVER_NAME = ServerName.Text;
+
+            FTP_CREDENTIALS = new NetworkCredential(FTPSettings.FTP_USERNAME, FTPSettings.FTP_PASSWORD);
+
             FindFile();
         }
 
@@ -263,5 +263,11 @@ namespace SaveFileSync
                 SearchPath.Text = "Save file directory here";
         }
         #endregion
+
+        private void Button2_Click(object sender, EventArgs e)
+        {
+            var FTPSettings = new FTPSettings(this);
+            FTPSettings.ShowDialog();
+        }
     }
 }
